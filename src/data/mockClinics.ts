@@ -1,0 +1,140 @@
+import { Clinic, AppointmentWithClinic } from '@/types/clinic';
+
+// Only dental clinics
+export const mockClinics: Clinic[] = [
+  {
+    id: 'clinic1',
+    name: 'Odonto Premium Centro',
+    address: 'Av. Paulista, 1000, 5º andar - Bela Vista, São Paulo - SP',
+    phone: '(11) 3000-1234',
+    cnpj: '12.345.678/0001-00',
+  },
+  {
+    id: 'clinic2',
+    name: 'Sorriso Perfeito Odontologia',
+    address: 'Rua Augusta, 500, Sala 12 - Consolação, São Paulo - SP',
+    phone: '(11) 3000-5678',
+    cnpj: '98.765.432/0001-00',
+  },
+  {
+    id: 'clinic3',
+    name: 'Centro Odontológico Jardins',
+    address: 'Alameda Santos, 800 - Jardins, São Paulo - SP',
+    phone: '(11) 3000-9012',
+    cnpj: '45.678.901/0001-00',
+  },
+];
+
+export const mockAppointmentsWithClinic: Record<string, AppointmentWithClinic[]> = {
+  '1': [
+    {
+      id: 'a1',
+      date: '2025-01-20',
+      time: '09:00',
+      professional: 'Dra. Ana Costa',
+      procedure: 'Limpeza Dental',
+      status: 'completed',
+      notes: 'Paciente com boa higiene bucal.',
+      clinic: mockClinics[0],
+    },
+    {
+      id: 'a2',
+      date: '2025-01-15',
+      time: '14:30',
+      professional: 'Dr. Carlos Oliveira',
+      procedure: 'Avaliação para Implante',
+      status: 'completed',
+      clinic: mockClinics[0],
+    },
+    {
+      id: 'a3',
+      date: '2025-01-25',
+      time: '10:00',
+      professional: 'Dra. Ana Costa',
+      procedure: 'Retorno',
+      status: 'confirmed',
+      clinic: mockClinics[0],
+    },
+    {
+      id: 'a10',
+      date: '2025-01-28',
+      time: '15:00',
+      professional: 'Dra. Marina Costa',
+      procedure: 'Clareamento',
+      status: 'pending',
+      clinic: mockClinics[1],
+    },
+  ],
+  '2': [
+    {
+      id: 'a4',
+      date: '2025-01-18',
+      time: '11:00',
+      professional: 'Dr. Paulo Ferreira',
+      procedure: 'Tratamento Periodontal',
+      status: 'completed',
+      clinic: mockClinics[0],
+    },
+    {
+      id: 'a5',
+      date: '2025-01-28',
+      time: '09:30',
+      professional: 'Dr. Paulo Ferreira',
+      procedure: 'Retorno',
+      status: 'pending',
+      clinic: mockClinics[2],
+    },
+  ],
+  '3': [
+    {
+      id: 'a6',
+      date: '2025-01-10',
+      time: '16:00',
+      professional: 'Dra. Marina Costa',
+      procedure: 'Limpeza Dental',
+      status: 'completed',
+      clinic: mockClinics[1],
+    },
+    {
+      id: 'a11',
+      date: '2025-01-30',
+      time: '14:00',
+      professional: 'Dra. Marina Costa',
+      procedure: 'Clareamento',
+      status: 'confirmed',
+      clinic: mockClinics[1],
+    },
+  ],
+  '4': [],
+  '5': [
+    {
+      id: 'a7',
+      date: '2025-01-22',
+      time: '08:30',
+      professional: 'Dra. Carla Mendes',
+      procedure: 'Tratamento de Canal',
+      status: 'confirmed',
+      clinic: mockClinics[2],
+    },
+    {
+      id: 'a12',
+      date: '2025-01-29',
+      time: '08:30',
+      professional: 'Dra. Carla Mendes',
+      procedure: 'Retorno Canal',
+      status: 'pending',
+      clinic: mockClinics[2],
+    },
+  ],
+  '6': [
+    {
+      id: 'a8',
+      date: '2024-11-20',
+      time: '10:00',
+      professional: 'Dr. Carlos Oliveira',
+      procedure: 'Colocação de Implante',
+      status: 'completed',
+      clinic: mockClinics[0],
+    },
+  ],
+};
