@@ -18,7 +18,7 @@ import { useCompleteAppointment } from '@/hooks/useCompleteAppointment';
 import { toast } from 'sonner';
 
 export default function Agenda() {
-  const completeAppointmentMutation = useCompleteAppointment();
+  const completeAppointmentMutation = useCompleteAppointmentWithPayment();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedProfessional, setSelectedProfessional] = useState('all');
   const [selectedClinic, setSelectedClinic] = useState('all');
