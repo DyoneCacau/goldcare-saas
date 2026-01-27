@@ -10,18 +10,19 @@ import { RequireFeature } from "@/components/subscription/RequireFeature";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Patients from "./pages/Patients";
-import Agenda from "./pages/Agenda";
 import Financial from "./pages/Financial";
 import Terms from "./pages/Terms";
 import Reports from "./pages/Reports";
-import Commissions from "./pages/Commissions";
 import Inventory from "./pages/Inventory";
 import Professionals from "./pages/Professionals";
 import TimeClock from "./pages/TimeClock";
 import Administration from "./pages/Administration";
-import SuperAdmin from "./pages/SuperAdmin";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
+// Páginas com dados REAIS do Supabase (substituindo mocks)
+import AgendaReal from "./pages/AgendaReal";
+import CommissionsReal from "./pages/CommissionsReal";
+import SuperAdminReal from "./pages/SuperAdminReal";
 
 const queryClient = new QueryClient();
 
@@ -105,7 +106,7 @@ function AppRoutes() {
           <ProtectedRoute>
             <SubscriptionGate>
               <RequireFeature feature="agenda">
-                <Agenda />
+                <AgendaReal />
               </RequireFeature>
             </SubscriptionGate>
           </ProtectedRoute>
@@ -161,7 +162,7 @@ function AppRoutes() {
           <ProtectedRoute>
             <SubscriptionGate>
               <RequireFeature feature="comissoes">
-                <Commissions />
+                <CommissionsReal />
               </RequireFeature>
             </SubscriptionGate>
           </ProtectedRoute>
@@ -229,7 +230,7 @@ function AppRoutes() {
         path="/superadmin"
         element={
           <ProtectedRoute>
-            <SuperAdmin />
+            <SuperAdminReal />
           </ProtectedRoute>
         }
       />
