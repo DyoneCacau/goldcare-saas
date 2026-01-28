@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
-import { useGenerateCommissions } from './useCommissions';
 import { toast } from 'sonner';
+import { generateCommissionsForPayment } from '@/services/paymentCommissionService';
 
 export interface CompleteAppointmentInput {
   appointmentId: string;
@@ -18,7 +18,6 @@ export interface CompleteAppointmentInput {
 export function useCompleteAppointmentWithPayment() {
   const queryClient = useQueryClient();
   const { clinicId, user } = useAuth();
-  const { mutateAsync: generateCommissions } = useGenerateCommissions();
 
   return useMutation({
     mutationFn: async (input: CompleteAppointmentInput) => {
@@ -69,16 +68,18 @@ export function useCompleteAppointmentWithPayment() {
 
       if (paymentError) throw paymentError;
 
-      // 4. Gerar comissões automaticamente
+      // 4. Gerar comissões automaticamente (SINGLE SOURCE OF TRUTH)
       try {
-        await generateCommissions({
+        await generateCommissionsForPayment({
           paymentId: payment.id,
+          clinicId,
           appointmentId: appointment.id,
           professionalId: appointment.professional_id,
-          procedureName: appointment.procedure_name,
-          procedureValue: appointment.procedure_value,
+          procedure: appointment.procedure_name,
+          // appointment_date é DATE no banco; garantimos Date aqui
+          appointmentDate: new Date(appointment.appointment_date),
           sellerId: appointment.seller_id,
-          receptionId: appointment.reception_id,
+          receptionistId: appointment.reception_id,
         });
       } catch (commissionError) {
         console.error('Erro ao gerar comissões:', commissionError);

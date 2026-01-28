@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { toast } from 'sonner';
+import { generateCommissionsForPayment } from '@/services/paymentCommissionService';
 
 export interface Commission {
   id: string;
@@ -66,7 +67,8 @@ export function useCommissions(filters?: {
 }
 
 /**
- * FUNÇÃO CORE: Gerar comissões automaticamente ao confirmar pagamento
+ * FUNÇÃO CORE (HOOK): Gerar comissões automaticamente ao confirmar pagamento
+ * Wrapper fino em cima de generateCommissionsForPayment (single source of truth)
  */
 export function useGenerateCommissions() {
   const queryClient = useQueryClient();
@@ -78,7 +80,7 @@ export function useGenerateCommissions() {
       appointmentId,
       professionalId,
       procedureName,
-      procedureValue,
+      appointmentDate,
       sellerId,
       receptionId,
     }: {
@@ -86,146 +88,28 @@ export function useGenerateCommissions() {
       appointmentId?: string | null;
       professionalId: string;
       procedureName: string;
-      procedureValue: number;
+      // Usamos o valor pago / total do próprio pagamento dentro do service
+      appointmentDate: Date;
       sellerId?: string | null;
       receptionId?: string | null;
     }) => {
       if (!clinicId) throw new Error('Clinic ID not found');
       if (!user) throw new Error('User not authenticated');
 
-      // 1. Buscar regras de comissão ativas
-      const { data: rules, error: rulesError } = await supabase
-        .from('commission_rules')
-        .select('*')
-        .eq('clinic_id', clinicId)
-        .eq('is_active', true)
-        .order('priority', { ascending: false });
-
-      if (rulesError) throw rulesError;
-
-      const commissionsToCreate: any[] = [];
-
-      // 2. Comissão do profissional (OBRIGATÓRIA)
-      const professionalRule = rules?.find(
-        (r: any) =>
-          r.beneficiary_type === 'professional' &&
-          (r.professional_id === professionalId || r.professional_id === 'all') &&
-          (r.procedure === procedureName || r.procedure === 'all')
-      );
-
-      if (professionalRule) {
-        const amount =
-          professionalRule.calculation_type === 'percentage'
-            ? (procedureValue * professionalRule.value) / 100
-            : professionalRule.value;
-
-        commissionsToCreate.push({
-          clinic_id: clinicId,
-          payment_id: paymentId,
-          appointment_id: appointmentId,
-          beneficiary_id: professionalId,
-          beneficiary_type: 'professional',
-          procedure_name: procedureName,
-          procedure_value: procedureValue,
-          amount,
-          percentage:
-            professionalRule.calculation_type === 'percentage'
-              ? professionalRule.value
-              : null,
-          base_value: procedureValue,
-          status: 'pending',
-        });
-      }
-
-      // 3. Comissão do vendedor (se houver)
-      if (sellerId) {
-        const sellerRule = rules?.find(
-          (r: any) =>
-            r.beneficiary_type === 'seller' &&
-            (r.beneficiary_id === sellerId || !r.beneficiary_id) &&
-            (r.procedure === procedureName || r.procedure === 'all')
-        );
-
-        if (sellerRule) {
-          const amount =
-            sellerRule.calculation_type === 'percentage'
-              ? (procedureValue * sellerRule.value) / 100
-              : sellerRule.value;
-
-          commissionsToCreate.push({
-            clinic_id: clinicId,
-            payment_id: paymentId,
-            appointment_id: appointmentId,
-            beneficiary_id: sellerId,
-            beneficiary_type: 'seller',
-            procedure_name: procedureName,
-            procedure_value: procedureValue,
-            amount,
-            percentage:
-              sellerRule.calculation_type === 'percentage' ? sellerRule.value : null,
-            base_value: procedureValue,
-            status: 'pending',
-          });
-        }
-      }
-
-      // 4. Comissão da recepção (se houver)
-      if (receptionId) {
-        const receptionRule = rules?.find(
-          (r: any) =>
-            r.beneficiary_type === 'reception' &&
-            (r.beneficiary_id === receptionId || !r.beneficiary_id) &&
-            (r.procedure === procedureName || r.procedure === 'all')
-        );
-
-        if (receptionRule) {
-          const amount =
-            receptionRule.calculation_type === 'percentage'
-              ? (procedureValue * receptionRule.value) / 100
-              : receptionRule.value;
-
-          commissionsToCreate.push({
-            clinic_id: clinicId,
-            payment_id: paymentId,
-            appointment_id: appointmentId,
-            beneficiary_id: receptionId,
-            beneficiary_type: 'reception',
-            procedure_name: procedureName,
-            procedure_value: procedureValue,
-            amount,
-            percentage:
-              receptionRule.calculation_type === 'percentage'
-                ? receptionRule.value
-                : null,
-            base_value: procedureValue,
-            status: 'pending',
-          });
-        }
-      }
-
-      // 5. Inserir comissões (idempotência garantida pelo índice único)
-      if (commissionsToCreate.length > 0) {
-        const { data, error: commissionsError } = await supabase
-          .from('commissions')
-          .insert(commissionsToCreate)
-          .select();
-
-        if (commissionsError) {
-          // Se erro for de constraint de unicidade, ignorar (comissões já existem)
-          if (!commissionsError.message.includes('unique')) {
-            throw commissionsError;
-          }
-        }
-
-        return {
-          commissionsCreated: data?.length || 0,
-          commissions: data || [],
-        };
-      }
+      const results = await generateCommissionsForPayment({
+        paymentId,
+        clinicId,
+        appointmentId: appointmentId || undefined,
+        professionalId,
+        procedure: procedureName,
+        appointmentDate,
+        sellerId: sellerId || undefined,
+        receptionistId: receptionId || undefined,
+      });
 
       return {
-        commissionsCreated: 0,
-        commissions: [],
+        commissionsCreated: results.length,
+        commissions: results,
       };
     },
     onSuccess: (result) => {

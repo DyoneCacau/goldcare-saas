@@ -241,7 +241,7 @@ export async function generateCommissionsForPayment(
     });
   }
 
-  // STEP 6: Insert into Supabase (TRANSACTION SAFETY)
+  // STEP 6: Insert into Supabase (TRANSACTION SAFETY + IDEMPOTENCY BACKUP)
   if (commissionsToInsert.length > 0) {
     const { data, error } = await supabase
       .from('commissions')
@@ -249,8 +249,15 @@ export async function generateCommissionsForPayment(
       .select();
 
     if (error) {
+      // Se cair aqui por conta de constraint única, assumimos que as comissões já existem
+      const message = (error as any).message || '';
+      if (message.toLowerCase().includes('unique') || message.toLowerCase().includes('duplicate key')) {
+        console.warn('Unique constraint when saving commissions, assuming already generated for payment:', paymentId);
+        return results;
+      }
+
       console.error('Error saving commissions:', error);
-      throw new Error('Erro ao salvar comissões: ' + error.message);
+      throw new Error('Erro ao salvar comissões: ' + message);
     }
 
     // Update results with IDs

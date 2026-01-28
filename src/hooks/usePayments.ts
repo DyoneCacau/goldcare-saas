@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { toast } from 'sonner';
 import { Payment, PaymentMethod, PaymentStatus } from '@/types/payment';
+import { cancelCommissionsForPayment } from '@/services/paymentCommissionService';
 
 /**
  * Hook to fetch payments for a clinic
@@ -156,6 +157,14 @@ export function useCancelPayment() {
         .single();
 
       if (error) throw error;
+
+      // Cancelar comissões vinculadas a este pagamento
+      try {
+        await cancelCommissionsForPayment(paymentId);
+      } catch (commissionError) {
+        console.error('Erro ao cancelar comissões para pagamento cancelado:', commissionError);
+      }
+
       return transformPaymentFromDB(data);
     },
     onSuccess: () => {

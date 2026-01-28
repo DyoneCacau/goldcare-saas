@@ -22,7 +22,7 @@ import NotFound from "./pages/NotFound";
 // Páginas com dados REAIS do Supabase (substituindo mocks)
 import AgendaReal from "./pages/AgendaReal";
 import CommissionsReal from "./pages/CommissionsReal";
-import SuperAdminReal from "./pages/SuperAdminReal";
+import SuperAdmin from "./pages/SuperAdmin";
 
 const queryClient = new QueryClient();
 
@@ -225,12 +225,12 @@ function AppRoutes() {
         }
       />
 
-      {/* SuperAdmin - sem verificação de feature */}
+      {/* SuperAdmin - sem verificação de feature, apenas role */}
       <Route
         path="/superadmin"
         element={
           <ProtectedRoute>
-            <SuperAdminReal />
+            <SuperAdmin />
           </ProtectedRoute>
         }
       />
