@@ -14,6 +14,11 @@ interface Subscription {
   id: string;
   status: string;
   trial_ends_at: string | null;
+  billing_cycle: 'monthly' | 'yearly' | null;
+  auto_renew: boolean;
+  next_billing_date: string | null;
+  last_billing_date: string | null;
+  payment_method: string | null;
   plan: Plan | null;
 }
 
@@ -97,11 +102,19 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
           id,
           status,
           trial_ends_at,
+          billing_cycle,
+          auto_renew,
+          next_billing_date,
+          last_billing_date,
+          payment_method,
           plans (
             id,
             name,
             slug,
-            features
+            features,
+            max_clinics,
+            price_monthly,
+            price_yearly
           )
         `)
         .eq('clinic_id', clinicUser.clinic_id)
@@ -113,6 +126,11 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
           id: subData.id,
           status: subData.status,
           trial_ends_at: subData.trial_ends_at,
+          billing_cycle: subData.billing_cycle as 'monthly' | 'yearly' | null,
+          auto_renew: subData.auto_renew ?? true,
+          next_billing_date: subData.next_billing_date,
+          last_billing_date: subData.last_billing_date,
+          payment_method: subData.payment_method,
           plan: plan ? {
             ...plan,
             features: Array.isArray(plan.features) ? plan.features : JSON.parse(plan.features as unknown as string || '[]')

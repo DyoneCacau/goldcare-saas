@@ -19,6 +19,7 @@ import {
   FileText,
   Crown,
   Lock,
+  Building2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -49,6 +50,7 @@ const menuItems: MenuItem[] = [
   { icon: Package, label: "Estoque", path: "/estoque", feature: "estoque" },
   { icon: FileBarChart, label: "Relatórios", path: "/relatorios", feature: "relatorios" },
   { icon: Shield, label: "Administração", path: "/administracao", feature: "administracao" },
+  { icon: Building2, label: "Minhas Clínicas", path: "/minhas-clinicas" },
   { icon: Settings, label: "Configurações", path: "/configuracoes", feature: "configuracoes" },
 ];
 

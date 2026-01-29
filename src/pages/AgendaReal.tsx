@@ -1,16 +1,19 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { format } from 'date-fns';
 import { Plus, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { MainLayout } from '@/components/layout/MainLayout';
-import { useAppointments } from '@/hooks/useAppointments';
+import { useAppointments, Appointment } from '@/hooks/useAppointments';
 import { useCompleteAppointmentWithPayment } from '@/hooks/useCompleteAppointmentWithPayment';
+import { AppointmentFormDialogReal } from '@/components/agenda/AppointmentFormDialogReal';
 import { toast } from 'sonner';
 
 export default function AgendaReal() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedProfessional, setSelectedProfessional] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState<'pending' | 'confirmed' | 'all'>('all');
+  const [isAppointmentDialogOpen, setIsAppointmentDialogOpen] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
 
   // Buscar agendamentos do Supabase
   const { data: appointments = [], isLoading, error } = useAppointments({
@@ -60,7 +63,10 @@ export default function AgendaReal() {
               {appointments.length} agendamento(s) para {format(selectedDate, 'dd/MM/yyyy')}
             </p>
           </div>
-          <Button>
+          <Button onClick={() => {
+            setSelectedAppointment(null);
+            setIsAppointmentDialogOpen(true);
+          }}>
             <Plus className="mr-2 h-4 w-4" />
             Novo Agendamento
           </Button>
@@ -122,6 +128,14 @@ export default function AgendaReal() {
           )}
         </div>
       </div>
+
+      {/* Dialog de Criar/Editar Agendamento */}
+      <AppointmentFormDialogReal
+        open={isAppointmentDialogOpen}
+        onOpenChange={setIsAppointmentDialogOpen}
+        appointment={selectedAppointment}
+        selectedDate={selectedDate}
+      />
     </MainLayout>
   );
 }

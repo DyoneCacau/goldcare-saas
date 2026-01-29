@@ -66,11 +66,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setRoles(rolesData.map(r => r.role as AppRole));
       }
 
-      // Buscar clinic_id do usuário
+      // Buscar clinic_id do usuário (primeira clínica ou clínica principal)
+      // Para multi-clínica, usar a primeira clínica onde é owner ou a primeira vinculada
       const { data: clinicUserData } = await supabase
         .from('clinic_users')
         .select('clinic_id, is_owner')
         .eq('user_id', userId)
+        .order('is_owner', { ascending: false }) // Priorizar clínicas onde é owner
+        .limit(1)
         .maybeSingle();
 
       if (clinicUserData) {

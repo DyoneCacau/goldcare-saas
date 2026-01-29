@@ -28,6 +28,7 @@ interface Plan {
   price_yearly: number | null;
   max_users: number | null;
   max_patients: number | null;
+  max_clinics: number | null;
   features: string[];
   is_active: boolean;
 }
@@ -60,6 +61,7 @@ export function PlansManagement() {
     price_yearly: "",
     max_users: "",
     max_patients: "",
+    max_clinics: "",
     features: [] as string[],
     is_active: true,
   });
@@ -99,6 +101,7 @@ export function PlansManagement() {
       price_yearly: plan.price_yearly ? String(plan.price_yearly) : "",
       max_users: plan.max_users ? String(plan.max_users) : "",
       max_patients: plan.max_patients ? String(plan.max_patients) : "",
+      max_clinics: plan.max_clinics ? String(plan.max_clinics) : "",
       features: plan.features,
       is_active: plan.is_active,
     });
@@ -115,6 +118,7 @@ export function PlansManagement() {
       price_yearly: "",
       max_users: "",
       max_patients: "",
+      max_clinics: "",
       features: [],
       is_active: true,
     });
@@ -131,6 +135,7 @@ export function PlansManagement() {
         price_yearly: formData.price_yearly ? parseFloat(formData.price_yearly) : null,
         max_users: formData.max_users ? parseInt(formData.max_users) : null,
         max_patients: formData.max_patients ? parseInt(formData.max_patients) : null,
+        max_clinics: formData.max_clinics ? parseInt(formData.max_clinics) : null,
         features: formData.features,
         is_active: formData.is_active,
       };
@@ -325,7 +330,7 @@ export function PlansManagement() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="max_users">Limite de Usuários</Label>
                 <Input
@@ -345,6 +350,19 @@ export function PlansManagement() {
                   onChange={(e) => setFormData({ ...formData, max_patients: e.target.value })}
                   placeholder="Ilimitado"
                 />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="max_clinics">Limite de Clínicas</Label>
+                <Input
+                  id="max_clinics"
+                  type="number"
+                  value={formData.max_clinics}
+                  onChange={(e) => setFormData({ ...formData, max_clinics: e.target.value })}
+                  placeholder="Ilimitado"
+                />
+                <p className="text-xs text-muted-foreground">
+                  NULL = ilimitado
+                </p>
               </div>
             </div>
 

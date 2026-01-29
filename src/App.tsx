@@ -23,6 +23,7 @@ import NotFound from "./pages/NotFound";
 import AgendaReal from "./pages/AgendaReal";
 import CommissionsReal from "./pages/CommissionsReal";
 import SuperAdmin from "./pages/SuperAdmin";
+import MyClinics from "./pages/MyClinics";
 
 const queryClient = new QueryClient();
 
@@ -231,6 +232,18 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <SuperAdmin />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Minhas Clínicas - sempre disponível para usuários */}
+      <Route
+        path="/minhas-clinicas"
+        element={
+          <ProtectedRoute>
+            <SubscriptionGate>
+              <MyClinics />
+            </SubscriptionGate>
           </ProtectedRoute>
         }
       />

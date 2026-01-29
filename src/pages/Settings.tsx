@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Building2, CreditCard, Calendar, Check, Loader2, AlertTriangle, Crown, Sparkles, Zap } from 'lucide-react';
+import { Building2, CreditCard, Calendar, Check, Loader2, AlertTriangle, Crown, Sparkles, Zap, RefreshCw } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useSubscription } from '@/hooks/useSubscription';
@@ -15,6 +15,7 @@ import { toast } from 'sonner';
 import { format, formatDistanceToNow, isPast } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
+import { RecurringPaymentsSettings } from '@/components/subscription/RecurringPaymentsSettings';
 
 interface ClinicData {
   id: string;
@@ -232,10 +233,14 @@ export default function Settings() {
         </div>
 
         <Tabs defaultValue="subscription" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 lg:w-auto lg:inline-grid">
+          <TabsList className="grid w-full grid-cols-3 lg:w-auto lg:inline-grid">
             <TabsTrigger value="subscription" className="flex items-center gap-2">
               <CreditCard className="h-4 w-4" />
               <span>Meu Plano</span>
+            </TabsTrigger>
+            <TabsTrigger value="recurring" className="flex items-center gap-2">
+              <RefreshCw className="h-4 w-4" />
+              <span>Pagamentos</span>
             </TabsTrigger>
             <TabsTrigger value="clinic" className="flex items-center gap-2">
               <Building2 className="h-4 w-4" />
@@ -348,6 +353,11 @@ export default function Settings() {
                 )}
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Recurring Payments Tab */}
+          <TabsContent value="recurring" className="space-y-6">
+            <RecurringPaymentsSettings />
           </TabsContent>
 
           {/* Clinic Data Tab */}
