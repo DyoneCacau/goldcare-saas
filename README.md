@@ -4,7 +4,7 @@ Sistema completo de gestão para clínicas odontológicas multi-tenant com autom
 
 ## 🏥 Sobre o Projeto
 
-**Clinic Harmony Hub** é um SaaS odontológico moderno e escalável, desenvolvido para automatizar a gestão completa de clínicas dentárias. O sistema oferece controle total sobre agendamentos, pacientes, profissionais, financeiro e o diferencial: **automação completa de comissões**.
+**Goldcare** é um SaaS odontológico moderno e escalável, desenvolvido para automatizar a gestão completa de clínicas dentárias. O sistema oferece controle total sobre agendamentos, pacientes, profissionais, financeiro e o diferencial: **automação completa de comissões**.
 
 ### Principais Diferenciais
 
@@ -251,4 +251,21 @@ Para dúvidas ou sugestões, entre em contato através do repositório.
 
 ---
 
-**Clinic Harmony Hub** - Gestão Odontológica Inteligente 🦷✨
+**Goldcare** - Gestão Odontológica Inteligente 🦷✨
+
+# GoldCare SaaS — Banco (Supabase/Postgres)
+
+## Ordem de execução
+1. `database/sql/0000_profiles_trigger.sql`
+2. `database/sql/0001_companies_units_users.sql`
+3. `database/sql/0002_rbac.sql`
+4. `database/sql/0003_providers.sql`
+5. `database/sql/0004_patients.sql`
+6. `database/sql/0005_appointments.sql`
+7. `database/sql/0006_indexes_constraints.sql`
+8. `database/sql/0007_policies_owner_or_permission.sql`
+
+### Observações
+- As policies de escrita liberam **owner** da empresa **OU** usuários com permissões `*.write` via RBAC.
+- O índice de “próximas consultas” com `now()` **não é permitido** em predicado de índice; por isso usamos o índice completo `(company_id, starts_at)`.
+- O módulo **financeiro** não foi incluído aqui; quando criar as tabelas (`payments`, etc.), adicionaremos as policies de “somente owner” ou por permissão (`billing.write`).
